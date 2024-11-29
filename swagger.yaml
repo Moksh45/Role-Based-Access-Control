@@ -1,0 +1,212 @@
+openapi: 3.0.3
+info:
+  title: Role-Based Access Control (RBAC) API
+  description: API documentation for the RBAC application with authentication, authorization, and role-based access control.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5050/api/v0.1
+    description: Development server
+tags:
+  - name: Authentication
+    description: Endpoints related to authentication
+  - name: Users
+    description: Endpoints related to user management
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        400:
+          description: Invalid input
+        500:
+          description: Server error
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Successful registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        400:
+          description: Invalid input
+        500:
+          description: Server error
+  /auth/verify-email/{id}:
+    get:
+      tags:
+        - Authentication
+      summary: Verify email address
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Email verified successfully
+        400:
+          description: Invalid request
+        404:
+          description: Token or user not found
+  /auth/logout/{userId}:
+    post:
+      tags:
+        - Authentication
+      summary: Logout a user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceInfo:
+                  type: string
+                os:
+                  type: string
+                action:
+                  type: string
+      responses:
+        200:
+          description: Successful logout
+        404:
+          description: User or device not found
+        500:
+          description: Server error
+  /users/:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+        500:
+          description: Server error
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get a user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  role:
+                    type: string
+        404:
+          description: User not found
+        500:
+          description: Server error
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+    LoginHistory:
+      type: object
+      properties:
+        userId:
+          type: string
+        deviceInfo:
+          type: string
+        os:
+          type: string
+        action:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
